@@ -1,3 +1,4 @@
+from typing import overload
 from pieces import *
 
 class Board:
@@ -30,10 +31,35 @@ class Board:
     def update_board(self):
         for row in self.mapping:
             for piece in row:
-                piece.update_board(self.mapping)
+                piece.update_board(self)
 
     def get_king_pos(self, color: Color) -> Position:
         if color == 'white':
             return self.white_king_position
         else:
             return self.black_king_position
+    
+    def __getitem__(self, name: tuple[int, int]):
+        '''
+        board[(x, y)] Shortcut
+        
+        :param name: Tuple of (x, y)
+        :type name: tuple[int, int]
+        '''
+        return self.mapping[name[1]][ name[0]]
+    
+    
+    
+    def __setitem__(self, name: tuple[int,int], value: Piece):
+        '''
+        board[(x, y)] = value Shortcut
+        
+        :param name: Position
+        :type name: tuple[int, int]
+        :param value: Description
+        :type value: Piece
+        '''
+        self.mapping[name[1]][name[0]] = value
+        
+board = Board()
+print(board[(0, 5)])

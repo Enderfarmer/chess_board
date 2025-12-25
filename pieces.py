@@ -1,5 +1,6 @@
 from typing import Literal
 from graphics.pieces import *
+from string import ascii_uppercase, digits
 
 __all__ = [
     "Piece",
@@ -54,22 +55,21 @@ class Piece:
         if self.is_valid_move(new_position, True):
             print("Is valid move at first")
             old_x, old_y = self.position
-            new_x, new_y = new_position
             old_board = self.board
-            old_piece = self.board.mapping[new_y][new_x]
+            old_piece = self.board[new_position]
 
-            self.board.mapping[new_y][new_x] = self
-            self.board.mapping[old_y][old_x] = Empty((old_x, old_y))
-            self.position = (new_x, new_y)
+            self.board[new_position] = self
+            self.board[self.position] = Empty((old_x, old_y))
+            self.position = new_position
 
             self.update_board(self.board)
             if pos_attacked(self.board, self.board.get_king_pos(self.color), self.color):
                 self.position = old_x, old_y
                 self.board = old_board
-                self.board.mapping[old_x][old_y] = self
-                self.board.mapping[new_position[0]][new_position[1]] = old_piece
+                self.board[self.position] = self
+                self.board[new_position] = old_piece
                 self.update_board(self.board)
-                return False
+                raise ValueError("Leaves king in check")
             return True
         return False
     def __invert__(self):
@@ -86,9 +86,9 @@ class Piece:
         return self.is_valid_move(position)
 
     def __str__(self):
-        return f"A {self.color} {self.__class__.__name__} at {self.position}"
+        return f"A {self.color} {self.__class__.__name__} at {ascii_uppercase[self.position[0]]}{digits[self.position[1] + 1]}"
     def __repr__(self):
-        return f"A {self.color} {self.__class__.__name__} at {self.position}"
+        return f"A {self.color} {self.__class__.__name__} at {ascii_uppercase[self.position[0]]}{digits[self.position[1] + 1]}"
 
 class Empty(Piece):
     abbr = "."
@@ -100,7 +100,9 @@ class Empty(Piece):
         return False
     
     def __str__(self):
-        return f"An empty square at {self.position}"
+        return f"An empty square at {ascii_uppercase[self.position[0]]}{digits[self.position[1] + 1]}"
+    def __repr__(self):
+        return f"An empty sqare at {ascii_uppercase[self.position[0]]}{digits[self.position[1] + 1]}"
 
     
 class Pawn(Piece):
@@ -115,52 +117,52 @@ class Pawn(Piece):
             first_move = (self.position[0], 3)
             hit_move0 = (self.position[0] - 1, self.position[1] + 1)
             hit_move1 = (self.position[0] + 1,self.position[1] + 1)
-            if new_position == hit_move0:
-                if self.board.mapping[hit_move0[0]][hit_move0[1]].color == "black":
-                    return True
-                if because_of_move:
-                    print(f"Left capture square for the white pawn at {self.position} contains: ",self.board.mapping[hit_move0[0]][hit_move0[1]] if because_of_move else "")
-            elif new_position == hit_move1:
-                if self.board.mapping[hit_move1[0]][hit_move1[1]].color == "black":
-                    
-                    return True
-                if because_of_move:
-                    print(f"Right capture square for the white pawn at {self.position} contains: " ,self.board.mapping[hit_move1[0]][hit_move1[1]] if because_of_move else "")
-            elif new_position == move:
-                if not self.board.mapping[move[0]][move[1]]:
-                    return True
-                if because_of_move:
-                    print(f"Normal move square for the pawn at {self.position} contains: ",self.board.mapping[move[0]][move[1]] if because_of_move else "")
-            elif new_position == first_move and self.position[1] == 1 and not self.board.mapping[move[0]][move[1]] and not self.board.mapping[first_move[0]][first_move[1]]:
-                return True
             if because_of_move:
+                print(f"Left capture square for the white pawn at {self.position} contains: ",self.board[hit_move0].color == "black")
+                print(f"Right capture square for the white pawn at {self.position} contains: " ,self.board[hit_move1])
+                print(f"Normal move square for the white pawn at {self.position} contains: ",self.board[move])
                 print(
-                    f"Normal move square for the pawn at {self.position} contains: ", 
-                    self.board.mapping[move[0]][move[1]] if because_of_move else "",
-                    "\n", 
-                    f"Extended move square for the pawn at {self.position} contains: ", 
-                    self.board.mapping[move[0]][move[1]] if because_of_move else ""
+                    f"Extended move square for the white pawn at {self.position} contains: ", 
+                    self.board[move]
                 )
+            if new_position == hit_move0:
+                if self.board[hit_move0].color == "black":
+                    return True
+            elif new_position == hit_move1:
+                if self.board[hit_move1].color == "black":
+                    return True
+                
+            elif new_position == move:
+                if not self.board[move]:
+                    return True
+            elif new_position == first_move and self.position[1] == 1 and not self.board[move] and not self.board[first_move]:
+                return True                
         else:
             move = (self.position[0], self.position[1] -1)
             first_move = (self.position[0], 4)
             hit_move0 = (self.position[0] - 1, self.position[1] - 1)
             hit_move1 = (self.position[0] + 1,self.position[1] - 1)
+            if because_of_move:
+                print(f"Left capture square for the black pawn at {self.position} contains: ",self.board[hit_move0])
+                print(f"Right capture square for the black pawn at {self.position} contains: " ,self.board[hit_move1])
+                print(f"Normal move square for the black pawn at {self.position} contains: ",self.board[move])
+                print(
+                    f"Extended move square for the black pawn at {self.position} contains: ", 
+                    self.board[first_move]
+                )
             if new_position == hit_move0:
-                if self.board.mapping[hit_move0[0]][hit_move0[1]].color == "white":
+                if self.board[hit_move0].color == "white":
                     return True
-                # print(self.board.mapping[hit_move0[0]][hit_move0[1]] if because_of_move else "")
             elif new_position == hit_move1:
-                if self.board.mapping[hit_move1[0]][hit_move1[1]].color == "white":
+                if self.board[hit_move1].color == "white":
                     return True
-                # print(self.board.mapping[hit_move1[0]][hit_move1[1]] if because_of_move else "")
             elif new_position == move:
-                if not self.board.mapping[move[0]][move[1]]:
+                if not self.board[move]:
                     return True
-                # print(self.board.mapping[move[0]][move[1]] if because_of_move else "")
-            elif new_position == first_move and self.position[1] == 6 and not self.board.mapping[move[0]][move[1]] and not self.board.mapping[first_move[0]][first_move[1]]:
-                return True
-            # print(self.board.mapping[move[0]][move[1]], self.board.mapping[move[0]][move[1]] if because_of_move else "")
+            elif new_position == first_move and self.position[1] == 6:
+                if not self.board[move] and not self.board[first_move]:
+                    return True
+            
         return False
 
     def move(self, new_position: Position, piece_type_if_promoted: Piece = None) -> bool:
@@ -198,7 +200,7 @@ class Bishop(Piece):
             x += step_x
             y += step_y
             while (x, y) != new_position:
-                if not not board.mapping[x][y]:
+                if not not board[x, y]:
                     return False
                 x += step_x
                 y += step_y
@@ -209,15 +211,14 @@ class Bishop(Piece):
         dx = abs(new_position[0] - self.position[0])
         dy = abs(new_position[1] - self.position[1])
         if dx == dy:
-            print("Move on diagonal")
             step_x = 1 if new_position[0] > self.position[0] else -1
             step_y = 1 if new_position[1] > self.position[1] else -1
             x, y = self.position
             x += step_x
             y += step_y
             while (x, y) != new_position:
-                if not not self.board.mapping[x][y]:
-                    print(self.board.mapping[x][y])
+                if not not self.board[x,y]:
+                    print(self.board[x,y])
                     return False
                 x += step_x
                 y += step_y
@@ -238,12 +239,12 @@ class Rook(Piece):
             if new_position[0] == old_position[0]:
                 step = 1 if new_position[1] > old_position[1] else -1
                 for y in range(old_position[1] + step, new_position[1], step):
-                    if not not board.mapping[old_position[0]][y]:
+                    if not not board[old_position[0], y]:
                         return False
             else:
                 step = 1 if new_position[0] > old_position[0] else -1
                 for x in range(old_position[0] + step, new_position[0], step):
-                    if not not board.mapping[x][old_position[1]]:
+                    if not not board[x,old_position[1]]:
                         return False
             return True
         return False
@@ -253,12 +254,12 @@ class Rook(Piece):
             if new_position[0] == self.position[0]:
                 step = 1 if new_position[1] > self.position[1] else -1
                 for y in range(self.position[1] + step, new_position[1], step):
-                    if not not self.board.mapping[self.position[0]][y]:
+                    if not not self.board[self.position[0],y]:
                         return False
             else:
                 step = 1 if new_position[0] > self.position[0] else -1
                 for x in range(self.position[0] + step, new_position[0], step):
-                    if not not self.board.mapping[x][self.position[1]]:
+                    if not not self.board[x,self.position[1]]:
                         return False
             return True
         return False

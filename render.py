@@ -23,7 +23,7 @@ def graphics(board: Board) -> str:
                         row.append(num_graphic_mapping[big_row][normal_row].replace("_", " "))
                         # print("Appending number graphics:", num_graphic_mapping[big_row][normal_row])
                     else:
-                        piece: Piece = board.mapping[big_row][column-1]
+                        piece: Piece = board[column-1,big_row]
                         # append_str = piece.pattern[normal_row]
                         if piece.color == 'black':
                             row.append(piece.pattern[normal_row].replace("H", " ").replace("_", "H"))

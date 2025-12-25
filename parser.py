@@ -58,7 +58,7 @@ def move_piece(board: Board, parsed_move: parsed_dict) -> bool:
     color_to_move = parsed_move.get("color_to_move", None)
     piece: Piece
     if initial_position is not None:
-        piece = board.mapping[initial_position[1]][initial_position[0]]
+        piece = board[initial_position]
         target_abbr = target_piece_type.abbr
         if not target_abbr == target_piece_type.abbr:
             raise ValueError(f"No {target_piece_type} at position {initial_position}")
