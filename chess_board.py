@@ -60,3 +60,38 @@ class Board:
         :type value: Piece
         '''
         self.mapping[name[1]][name[0]] = value
+    def has_legal_move(self, color: Color) -> bool:
+        for row in self.board.mapping:
+            for piece in row:
+                if piece.color != color:
+                    continue
+                for tx in range(len(self.mapping[0])):
+                    for ty in range(len(self.mapping)):
+                        try:
+                            if piece.is_valid_move((tx, ty)):
+                                # try the move
+                                old_pos = piece.position
+                                old_piece = self.board[tx, ty]
+
+                                piece.move((tx, ty))
+
+                                # move succeeded → legal escape exists
+                                return True
+
+                        except ValueError:
+                            # move leaves king in check
+                            pass
+
+                        finally:
+                            # restore board (VERY IMPORTANT)
+                            piece.position = old_pos
+                            self.board[old_pos] = piece
+                            self.board[tx, ty] = old_piece
+                            piece.update_board(self.board)
+        return False
+
+class CheckMateError(Exception):
+    pass
+
+class StaleMateError(Exception):
+    pass
