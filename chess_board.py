@@ -60,6 +60,3 @@ class Board:
         :type value: Piece
         '''
         self.mapping[name[1]][name[0]] = value
-        
-board = Board()
-print(board[(0, 5)])

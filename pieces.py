@@ -53,7 +53,6 @@ class Piece:
                     
     def move(self, new_position: Position) -> bool:
         if self.is_valid_move(new_position, True):
-            print("Is valid move at first")
             old_x, old_y = self.position
             old_board = self.board
             old_piece = self.board[new_position]
@@ -117,14 +116,6 @@ class Pawn(Piece):
             first_move = (self.position[0], 3)
             hit_move0 = (self.position[0] - 1, self.position[1] + 1)
             hit_move1 = (self.position[0] + 1,self.position[1] + 1)
-            if because_of_move:
-                print(f"Left capture square for the white pawn at {self.position} contains: ",self.board[hit_move0].color == "black")
-                print(f"Right capture square for the white pawn at {self.position} contains: " ,self.board[hit_move1])
-                print(f"Normal move square for the white pawn at {self.position} contains: ",self.board[move])
-                print(
-                    f"Extended move square for the white pawn at {self.position} contains: ", 
-                    self.board[move]
-                )
             if new_position == hit_move0:
                 if self.board[hit_move0].color == "black":
                     return True
@@ -142,14 +133,6 @@ class Pawn(Piece):
             first_move = (self.position[0], 4)
             hit_move0 = (self.position[0] - 1, self.position[1] - 1)
             hit_move1 = (self.position[0] + 1,self.position[1] - 1)
-            if because_of_move:
-                print(f"Left capture square for the black pawn at {self.position} contains: ",self.board[hit_move0])
-                print(f"Right capture square for the black pawn at {self.position} contains: " ,self.board[hit_move1])
-                print(f"Normal move square for the black pawn at {self.position} contains: ",self.board[move])
-                print(
-                    f"Extended move square for the black pawn at {self.position} contains: ", 
-                    self.board[first_move]
-                )
             if new_position == hit_move0:
                 if self.board[hit_move0].color == "white":
                     return True
@@ -218,14 +201,11 @@ class Bishop(Piece):
             y += step_y
             while (x, y) != new_position:
                 if not not self.board[x,y]:
-                    print(self.board[x,y])
                     return False
                 x += step_x
                 y += step_y
             return True
         else:
-            if because_of_input:
-                print("Move not on diagonal")
             return False
 class Rook(Piece):
     abbr = "R"
@@ -289,6 +269,3 @@ class King(Piece):
         dx = abs(position[0] - self.position[0])
         dy = abs(position[1] - self.position[1])
         return dx <= 1 and dy <= 1
-
-if __name__ == "__main__":
-    print(not Empty( (0,0)))
