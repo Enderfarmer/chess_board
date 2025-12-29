@@ -42,7 +42,7 @@ class Board:
     def __getitem__(self, name: tuple[int, int]):
         '''
         board[(x, y)] Shortcut
-        
+        So you don't have to self.board.mapping[y][x]
         :param name: Tuple of (x, y)
         :type name: tuple[int, int]
         '''
@@ -61,18 +61,17 @@ class Board:
         '''
         self.mapping[name[1]][name[0]] = value
     def has_legal_move(self, color: Color) -> bool:
-        for row in self.board.mapping:
+        for row in self.mapping:
             for piece in row:
                 if piece.color != color:
                     continue
                 for tx in range(len(self.mapping[0])):
                     for ty in range(len(self.mapping)):
-                        try:
-                            if piece.is_valid_move((tx, ty)):
-                                # try the move
-                                old_pos = piece.position
-                                old_piece = self.board[tx, ty]
+                        old_pos = piece.position
+                        old_piece = self[tx, ty]
 
+                        try:
+                            
                                 piece.move((tx, ty))
 
                                 # move succeeded → legal escape exists
@@ -85,9 +84,9 @@ class Board:
                         finally:
                             # restore board (VERY IMPORTANT)
                             piece.position = old_pos
-                            self.board[old_pos] = piece
-                            self.board[tx, ty] = old_piece
-                            piece.update_board(self.board)
+                            self[old_pos] = piece
+                            self[tx, ty] = old_piece
+                            piece.update_board(self)
         return False
 
 class CheckMateError(Exception):
