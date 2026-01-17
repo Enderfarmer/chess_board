@@ -7,5 +7,5 @@ but also really good.
 
 ### An example screenshot
 
-![A screenshot of the shell displaying a chess board with pieces made out of H's and spaces](https://raw.githubusercontent.com/Enderfarmer/chess_board/refs/heads/main/Screenshot.png)
+![A screenshot of the shell displaying a chess board with pieces made out of white spaces and normal spaces](https://raw.githubusercontent.com/Enderfarmer/chess_board/refs/heads/main/Example.png)
 (Of course this is only a cut of the actual board)
