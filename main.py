@@ -1,7 +1,12 @@
 from chess_board import Board, CheckMateError, StaleMateError
 from render import render, clear
-from pieces import pos_attacked
+from pieces import pos_attacked, Pawn, Bishop
 from parser import parse_input, move_piece
+
+# [
+    #     [Pawn("black", (0,0)),  Bishop("white", (0,1))], 
+    #     [Pawn("white", (1, 0)), Bishop("black", (1,1))]
+    # ]
 
 clear()
 board = Board()
